@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TestAllActivity">
+
+
+    <Button
+        android:id="@+id/ktopen"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="空调开" />
+    <Button
+        android:id="@+id/ktclose"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="空调关" />
+    <Button
+        android:id="@+id/templus"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="温度加" />
+    <Button
+        android:id="@+id/temminus"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="温度减" />
+    <Button
+        android:id="@+id/curtainopen"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="窗帘开" />
+    <Button
+        android:id="@+id/curtainstop"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="窗帘停" />
+    <Button
+        android:id="@+id/curtainclose"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="窗帘关" />
+
+    <Button
+        android:id="@+id/yiup"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="晾衣架上升" />
+    <Button
+        android:id="@+id/yidown"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="晾衣架下降" />
+
+</LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    tools:context=".TestPortActivity">
+
+
+    <Button
+        android:id="@+id/test_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test_port" />
+    <Button
+        android:id="@+id/writePart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="写入一个扇区" />
+    <Button
+        android:id="@+id/jump"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转用户区" />
+    <Button
+        android:id="@+id/check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="校验数据" />
+
+</LinearLayout>
