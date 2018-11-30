@@ -28,21 +28,24 @@ public class Constant {
     public static byte IOF = (byte) 0x68;
     public static byte EOT = (byte) 0x16;
 
-//    public static final String PATH = "/sdcard/upgrade/test.hex";
-    public static final String PATH = "/sdcard/upgrade/pro.hex";
+    //    public static final String PATH = "/sdcard/upgrade/test.hex";
+    public static final String PATH = "/sdcard/upgrade/29.hex";
+//    public static final String PATH = "/sdcard/upgrade/pro.hex";
 
     public static final int DATANUM = 512;
 
-    public static final long ADDRESS_OFFSET = 0x4000;
+    public static final long ADDRESS_OFFSET = 0x00004000;
+    //原始清楚的扇区地址
+    public static final long CLEAR_ALL_ADDRESS = 0x00FF1000;
 
-    public static boolean IS_BOOT_LOAD =true;
-    public static boolean IS_CLEAR_ALL =true;
-    public static boolean IS_CHECK_DATA =true;
-    public static boolean IS_SKIP =true;
+    public static boolean IS_BOOT_LOAD = true;
+    public static boolean IS_CLEAR_ALL = true;
+    public static boolean IS_CHECK_DATA = true;
+    public static boolean IS_SKIP = true;
 
-    public static final int FOR_TIMES=1000;
+    public static final int FOR_TIMES = 1000;
 
-    public static final long SPACE_TEME =200;
+    public static final long SPACE_TEME = 300;
 
 
 }

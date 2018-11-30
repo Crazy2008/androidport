@@ -12,21 +12,26 @@ public class Test {
       /*  byte[] bytes = intToByteArray(0xFF10);
         String s = ByteUtil.byteToHexStr(bytes, " ");
         System.out.println("s = [" + s + "]");*/
-        sssss();
-        kkk();
+//        sssss();
+
+
+
+        test();
 
     }
 
     private static void kkk() {
         byte bytes[]={0x00, (byte) 0xFF,0x10,0x00};
         int i = ByteUtil.byteToInt(bytes);
+        System.out.println("HEX="+Integer.toHexString(i));
+        System.out.println("DEC="+i);
+
     }
 
     public static void sssss(){
-        byte bytes[]={0x00,0x06};
-        byte a0 = bytes[0];
-        byte a1 = bytes[1];
-        System.out.println(a0+a1);
+        byte bytes[]={5,98,9,33,0,-1,98,43};
+        String s = ByteUtil.byteToHexStr(bytes, " ");
+        System.out.println("s="+s);
     }
 
     public static byte[] intToByteArray(int a) {
@@ -68,7 +73,9 @@ public class Test {
 //        byte bytes[] = {0x68, 0x00, 0x0C, 0x68, (byte) 0x95, (byte) 0xFD, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x46, 0x00, 0x05, (byte) 0xB1};
 //        byte bytes[] = {0x68, 0x00, 0x0C, 0x68, (byte) 0x95, (byte) 0xFD, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x46, 0x00, 0x35, (byte) 0x84};
 //        byte bytes[] = {0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x46, 0x00, (byte) 0xEB, (byte) 0x84};
-        byte bytes[] = {0x00, 0x00, 0x40, 0x00};
+//        byte bytes[] = {0x00, 0x00, 0x40, 0x00};
+//        byte bytes[] = {0x68,0x00 ,0x0C ,0x68 , (byte) 0x95, (byte) 0xFD,0x00 ,0x00 ,0x40 ,0x00 ,0x00 ,0x00 ,0x46 ,0x00 ,0x35 , (byte) 0x84};
+        byte bytes[] = {0x68,0x00 ,0x0C ,0x68 , (byte) 0x95, (byte) 0xFD,0x00 ,0x00 ,0x40 ,0x00 ,0x00 ,0x00 ,0x46 ,0x00};
         int crc = CrcUtils.getCrc(bytes);
         byte crcHight = (byte) (crc >> 8);
         byte crcLow = (byte) (crc & 0xFF);

@@ -19,6 +19,7 @@ public class PortBackDataHandler {
     private byte[] lastAddrBytes = new byte[4];
     private int size;
     private OnUpGradeListener listener;
+    private byte crcBytes[] = null;
 
     private PortBackDataHandler() {
     }
@@ -74,7 +75,7 @@ public class PortBackDataHandler {
     }
 
     /**
-     * 仿照给的c程序，计算扇区
+     * 仿照给的c程序，计算扇区，并给bootline二维数组赋值
      */
     private long calculateSpace() {
         for (int i = 0; i < boot_line.length; i++) {
@@ -159,6 +160,7 @@ public class PortBackDataHandler {
     private void switchSubCmd(byte subCmd, byte[] data) {
         printData(subCmd, data);
         switch (subCmd) {
+            //进入bootload模式
             case Constant.BOOT_LOAD:
                 Constant.IS_BOOT_LOAD = false;
                 for (int i = 0; i < Constant.FOR_TIMES; i++) {
@@ -167,6 +169,7 @@ public class PortBackDataHandler {
                     SystemClock.sleep(Constant.SPACE_TEME);
                 }
                 break;
+            //清楚所有扇区
             case Constant.CLEAR_ALL:
                 Constant.IS_CLEAR_ALL = false;
                 long bootlength = calculateSpace();
@@ -176,12 +179,14 @@ public class PortBackDataHandler {
                     return;
                 }
                 size = (int) ((bootlength + Constant.DATANUM - 1) / Constant.DATANUM);
+
                 writeAPart(size);
                 break;
             case Constant.CLEAR_ONE:
                 break;
             case Constant.READ_ONE:
                 break;
+            //写一个扇区
             case Constant.WRITE_ONE:
                 for (int i = 0; i < Constant.FOR_TIMES; i++) {
                     if (!Constant.IS_CHECK_DATA) break;
@@ -189,26 +194,68 @@ public class PortBackDataHandler {
                     SystemClock.sleep(Constant.SPACE_TEME);
                 }
                 break;
+            //校验
             case Constant.CHECK:
                 Constant.IS_CHECK_DATA = false;
-                byte[] bytes = new byte[4];
-                for (int i = 0; i < Constant.FOR_TIMES; i++) {
-                    if (!Constant.IS_SKIP) break;
-                    SendSerial.getInstance().sendData(Constant.SKIP, bytes);
-                    SystemClock.sleep(Constant.SPACE_TEME);
-                }
+                handleAllCheck(data);
+
                 break;
+            //跳转
             case Constant.SKIP:
                 Constant.IS_SKIP = false;
                 Constant.IS_BOOT_LOAD = true;
                 Constant.IS_CLEAR_ALL = true;
                 Constant.IS_CHECK_DATA = true;
-                String msg="upgrade success";
+                String msg = "upgrade success";
                 listener.onSuccess(msg);
                 break;
 
 
         }
+    }
+
+    /**
+     * 处理总数据的校验，判断从起始地址到最后地址的crc校验值，和数据包中返回的是否一致
+     *
+     * @param data
+     */
+    private void handleAllCheck(byte[] data) {
+        byte[] startAndEndPackBytes = getStartAndEndPackBytes();
+        if (startAndEndPackBytes == null || startAndEndPackBytes.length == 0) return;
+        if (data.length == startAndEndPackBytes.length + 2) {
+            //因为返回的数据带crc数据2位，所以+2
+            byte[] tempBytes = new byte[startAndEndPackBytes.length];
+            System.arraycopy(data, 0, tempBytes, 0, tempBytes.length);
+            if(Arrays.equals(tempBytes,startAndEndPackBytes)){
+                byte[] bytes = new byte[4];
+                int crc = CrcUtils.getCrc(crcBytes);
+                int hight = crc >> 8;
+                int low = crc & 0xFF;
+                Log.e("SendSerial", "hight=" + Integer.toHexString(hight));
+                Log.e("SendSerial", "low=" + Integer.toHexString(low));
+                //如果所写数据的crc校验和mcu返回的数据的crc校验一致就跳转到用户区
+                if((data[8]&0xFF)==hight&&(data[9]&0xFF)==low){
+                    for (int i = 0; i < 10; i++) {
+                        if (!Constant.IS_SKIP) break;
+                        SendSerial.getInstance().sendData(Constant.SKIP, bytes);
+                        SystemClock.sleep(Constant.SPACE_TEME);
+                    }
+                }else{
+                    Log.d(TAG, "handleAllCheck: 校验的crc不一致");
+                }
+
+            }else{
+                Log.d(TAG, "handleAllCheck: 起始地址和结束地址不匹配");
+            }
+        }else{
+            Log.d(TAG, "handleAllCheck: 不是对所有数据的校验，不处理");
+        }
+
+
+
+
+
+
     }
 
     private void printData(byte subCmd, byte[] data) {
@@ -223,24 +270,35 @@ public class PortBackDataHandler {
     }
 
     /**
-     * 发送校验的数据
+     * 单个扇区写入完成后，根据起始地址和最后一个扇区的地址，发送校验的数据(对数据的全部校验)
      *
      * @param data
      */
     private void sendCheckData(byte[] data) {
         //如果最后一个地址相同就说明写入成功了，就做校验操作
         if (Arrays.equals(lastAddrBytes, data)) {
+            Log.d(TAG, "is  last disk data");
             //原始地址
-            byte[] addrBytes = ByteUtil.longToByteArray(Constant.ADDRESS_OFFSET);
-            //扇区总大小
-            byte[] totalSize = ByteUtil.intToByteArray(size * Constant.DATANUM);
-            byte[] tempBytes = new byte[addrBytes.length + totalSize.length];
-            System.arraycopy(addrBytes, 0, tempBytes, 0, addrBytes.length);
-            System.arraycopy(totalSize, 0, tempBytes, addrBytes.length, totalSize.length);
+            byte[] tempBytes = getStartAndEndPackBytes();
             SendSerial.getInstance().sendData(Constant.CHECK, tempBytes);
         } else {
-            Log.d(TAG, "is not last disk data,not check");
+//            Log.d(TAG, "is not last disk data,not check");
         }
+    }
+
+    /**
+     * 获取开始和结束地址的bytes数组
+     *
+     * @return
+     */
+    private byte[] getStartAndEndPackBytes() {
+        byte[] addrBytes = ByteUtil.longToByteArray(Constant.ADDRESS_OFFSET);
+        //扇区总大小
+        byte[] totalSize = ByteUtil.intToByteArray(size * Constant.DATANUM);
+        byte[] tempBytes = new byte[addrBytes.length + totalSize.length];
+        System.arraycopy(addrBytes, 0, tempBytes, 0, addrBytes.length);
+        System.arraycopy(totalSize, 0, tempBytes, addrBytes.length, totalSize.length);
+        return tempBytes;
     }
 
     /**
@@ -293,14 +351,16 @@ public class PortBackDataHandler {
      * @param size
      */
     private void writeAPart(int size) {
-
+        crcBytes = new byte[size * Constant.DATANUM];
         for (int i = 0; i < size; i++) {
             String str = "第" + (i + 1) + "数据段";
             byte[] tempData = getBytesByTwoDArray(boot_line, i);
             if (tempData == null) {
                 continue;
             }
-            if (!is0xFF(tempData)) continue;
+            if (!is0xFF(tempData)) {
+                continue;
+            }
             long sector_addr = Constant.ADDRESS_OFFSET + i * Constant.DATANUM;
             byte[] addrData = ByteUtil.longToByteArray(sector_addr);
             byte[] sendData = new byte[tempData.length + 4];
@@ -311,12 +371,21 @@ public class PortBackDataHandler {
                 System.arraycopy(addrData, 0, lastAddrBytes, 0, addrData.length);
             }
             SendSerial.getInstance().sendData(Constant.WRITE_ONE, sendData);
-            SystemClock.sleep(10);
+            SystemClock.sleep(100);
+            if (crcBytes != null) {
+                System.arraycopy(tempData, 0, crcBytes, i * Constant.DATANUM, tempData.length);
+            }
 
         }
 
     }
 
+    /**
+     * 如果是全0xFF 就不写入
+     *
+     * @param tempData
+     * @return
+     */
     private boolean is0xFF(byte[] tempData) {
         for (int i = 0; i < tempData.length; i++) {
             if (tempData[i] != (byte) 0xFF) {
@@ -326,6 +395,9 @@ public class PortBackDataHandler {
         return false;
     }
 
+    /**
+     * 从bootline二维数组里，取出每个扇区所写入的对应数据，并返回
+     */
 
     private byte[] getBytesByTwoDArray(int[][] boot_line, int i) {
         if (boot_line != null && boot_line.length > 0) {

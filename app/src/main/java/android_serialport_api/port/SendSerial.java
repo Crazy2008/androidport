@@ -61,19 +61,19 @@ public class SendSerial extends BaseSerial implements OnUpGradeListener {
             if (buffer[0] == Constant.SOH) {
                 int len = buffer[1] + buffer[2];
                 if ((len + 7) == buffer.length) {
-                    byte[] tempBytes = new byte[buffer.length];
-                    System.arraycopy(buffer, 0, tempBytes, 0, tempBytes.length);
-                    checkPackageEnd(tempBytes);
+                    /*byte[] tempBytes = new byte[buffer.length];
+                    System.arraycopy(buffer, 0, tempBytes, 0, tempBytes.length);*/
+                    checkPackageEnd(buffer);
                 } else {
                     parseBuffData();
                 }
             } else {
-                Log.d(TAG, "package head error");
+                parseBuffData();
             }
 
         }
 
-     /*   //数据最少需要13个字节的长度
+      /* //数据最少需要13个字节的长度
         if (buffer.length >= 13) {
             //处理应答包数据
             PortBackDataHandler instance = PortBackDataHandler.getInstance();
@@ -102,7 +102,7 @@ public class SendSerial extends BaseSerial implements OnUpGradeListener {
     }
 
     /**
-     * 解析缓冲数据
+     * 处理缓冲区数据
      */
     private void parseBuffData() {
         int size = list.size();
@@ -112,12 +112,13 @@ public class SendSerial extends BaseSerial implements OnUpGradeListener {
         }
         if (size >= 3) {
             for (int i = 0; i < tempBytes.length; i++) {
+                //判断包头
                 if (tempBytes[i] == Constant.SOH) {
                     if (tempBytes.length >= (i + 2)) {
                         int len = tempBytes[i + 1] + tempBytes[i + 2];
-                        if (tempBytes.length >= (i + len + 9)) {
-                            byte[] sendBytes = new byte[i + len + 9];
-                            System.arraycopy(tempBytes, i, sendBytes, 0, i + len + 9);
+                        if (tempBytes.length >= (i + len + 7)) {
+                            byte[] sendBytes = new byte[ len + 7];
+                            System.arraycopy(tempBytes, i, sendBytes, 0, len + 9);
                             list.clear();
                             checkPackageEnd(sendBytes);
                             break;

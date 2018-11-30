@@ -34,17 +34,20 @@ public class TestPortActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.test_port:
-                SendSerial.getInstance().sendResetCmd();
-                Constant.IS_BOOT_LOAD =true;
-                Constant.IS_CLEAR_ALL =true;
-                Constant.IS_CHECK_DATA =true;
-                Constant.IS_SKIP =true;
+                    SendSerial.getInstance().sendResetCmd();
+                    Constant.IS_BOOT_LOAD =true;
+                    Constant.IS_CLEAR_ALL =true;
+                    Constant.IS_CHECK_DATA =true;
+                    Constant.IS_SKIP =true;
 
-                for (int i = 0; i < Constant.FOR_TIMES; i++) {
-                    if(!Constant.IS_BOOT_LOAD)break;
-                    sendBootLoad();
-                    SystemClock.sleep(Constant.SPACE_TEME);
-                }
+                    for (int i = 0; i < Constant.FOR_TIMES; i++) {
+                        if(!Constant.IS_BOOT_LOAD)break;
+                        sendBootLoad();
+                        SystemClock.sleep(Constant.SPACE_TEME);
+                    }
+                        SystemClock.sleep(Constant.SPACE_TEME);
+
+
 
 
               /*  long bootlength = calculateSpace();
