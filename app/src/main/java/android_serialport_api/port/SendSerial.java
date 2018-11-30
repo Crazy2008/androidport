@@ -16,6 +16,7 @@ public class SendSerial extends BaseSerial implements OnUpGradeListener {
     public static final String TAG = "SendSerial";
 
     private List<Byte> list = new ArrayList<Byte>();
+    private int count;
 
     private SendSerial() {
     }
@@ -117,7 +118,7 @@ public class SendSerial extends BaseSerial implements OnUpGradeListener {
                     if (tempBytes.length >= (i + 2)) {
                         int len = tempBytes[i + 1] + tempBytes[i + 2];
                         if (tempBytes.length >= (i + len + 7)) {
-                            byte[] sendBytes = new byte[ len + 7];
+                            byte[] sendBytes = new byte[len + 7];
                             System.arraycopy(tempBytes, i, sendBytes, 0, len + 9);
                             list.clear();
                             checkPackageEnd(sendBytes);
@@ -234,6 +235,5 @@ public class SendSerial extends BaseSerial implements OnUpGradeListener {
     @Override
     public void onFaile(String str) {
         Log.d(TAG, "onFaile\t" + str);
-
     }
 }

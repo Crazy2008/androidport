@@ -54,11 +54,15 @@ public class PortBackDataHandler {
 
         //做crc验证
         if (!checkCrc(buffer)) {
-            Log.d(TAG, "checkCrc faile");
+            String msg = "checkCrc faile";
+            Log.d(TAG, msg);
+            listener.onFaile(msg);
             return;
         }
         if (!checkLen(buffer)) {
-            Log.d(TAG, "checkLen faile");
+            String msg = "checkLen faile";
+            Log.d(TAG, msg);
+            listener.onFaile(msg);
             return;
         }
         //cmd位 如果为0x95表示是应答包
@@ -241,14 +245,20 @@ public class PortBackDataHandler {
                         SystemClock.sleep(Constant.SPACE_TEME);
                     }
                 }else{
-                    Log.d(TAG, "handleAllCheck: 校验的crc不一致");
+                    String msg = "handleAllCheck: 校验的crc不一致";
+                    Log.d(TAG, msg);
+                    listener.onFaile(msg);
                 }
 
             }else{
-                Log.d(TAG, "handleAllCheck: 起始地址和结束地址不匹配");
+                String msg = "handleAllCheck: 起始地址和结束地址不匹配";
+                Log.d(TAG, msg);
+                listener.onFaile(msg);
             }
         }else{
-            Log.d(TAG, "handleAllCheck: 不是对所有数据的校验，不处理");
+            String msg = "handleAllCheck: 不是对所有数据的校验，不处理";
+            Log.d(TAG, msg);
+            listener.onFaile(msg);
         }
 
 

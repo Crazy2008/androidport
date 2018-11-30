@@ -28,8 +28,8 @@ public class Constant {
     public static byte IOF = (byte) 0x68;
     public static byte EOT = (byte) 0x16;
 
-    //    public static final String PATH = "/sdcard/upgrade/test.hex";
-    public static final String PATH = "/sdcard/upgrade/29.hex";
+//    public static  String PATH = "/sdcard/upgrade/test.hex";
+    public static  String PATH = "/sdcard/upgrade/29.hex";
 //    public static final String PATH = "/sdcard/upgrade/pro.hex";
 
     public static final int DATANUM = 512;
